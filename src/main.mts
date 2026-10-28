@@ -25,6 +25,10 @@ function address(value: unknown): value is string {
     value !== "0x" + "0".repeat(40);
 }
 
+function assetAddress(value: unknown): value is string {
+  return typeof value === "string" && /^0x[0-9a-f]{40}$/.test(value);
+}
+
 function checkedMeta(meta: Meta): Meta {
   if (meta?.deployment !== DEPLOYMENT || meta.hasIndexingErrors !== false ||
       !Number.isSafeInteger(meta.block?.number) || meta.block.number < 1 ||
@@ -47,14 +51,15 @@ function plainName(value: unknown): value is string {
 }
 
 function toTag(market: Market): ContractTag {
-  if (!address(market.id) || !address(market.inputToken?.id) ||
+  if (!address(market.id) || !assetAddress(market.inputToken?.id) ||
       !address(market.silo?.configAddress) || !address(market.otherMarket?.id) ||
       market.otherMarket.id === market.id || market.sToken?.id !== market.id ||
       !/^(?:0|[1-9][0-9]{0,77})$/.test(market.silo?.siloId ?? "") ||
-      !Number.isSafeInteger(market.index) || market.index < 0 || market.index > 255) {
+      !Number.isSafeInteger(market.index) || market.index < 0 || market.index > 1) {
     throw new Error("A Silo V2 market has an invalid vault identity or configuration.");
   }
-  const published = plainName(market.name) ? market.name.trim() : "";
+  const zeroAsset = market.inputToken.id === "0x" + "0".repeat(40);
+  const published = !zeroAsset && plainName(market.name) ? market.name.trim() : "";
   let name = published
     ? `Silo V2 #${market.silo.siloId} ${published}`
     : `Silo V2 #${market.silo.siloId} Vault ${market.index}`;
@@ -64,8 +69,10 @@ function toTag(market: Market): ContractTag {
     "Public Name Tag": name,
     "Project Name": "Silo Finance",
     "UI/Website Link": "https://app.silo.finance/",
-    "Public Note": `Silo Finance V2 lending vault and ERC-20 deposit-share token for asset ${market.inputToken.id}, ` +
-      `silo #${market.silo.siloId}, configuration ${market.silo.configAddress}. ` +
+    "Public Note": `Silo Finance V2 vault contract, silo #${market.silo.siloId}, ` +
+      `configuration ${market.silo.configAddress}. ` +
+      (zeroAsset ? "Zero-asset configuration; no underlying asset is identified. " :
+        `Underlying asset: ${market.inputToken.id}. The vault is also its ERC-20 deposit-share token. `) +
       `Paired lending vault: ${market.otherMarket.id}. Source market index: ${market.index}.`,
   };
 }

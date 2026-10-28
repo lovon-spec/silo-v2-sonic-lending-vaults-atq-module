@@ -45,3 +45,5 @@ Use Yarn if installing dependencies, then run `yarn build`. All retrieval and
 tag construction logic is in `src/main.mts`; it exports only the asynchronous
 two-argument `returnTags` function. The module was authored from scratch and is
 MIT licensed.
+
+All source market instances are retained, including zero-asset configurations. A zero-asset instance receives its source Silo ID and market index as its name, and its note explicitly says that no underlying asset is identified. It is not presented as a usable deposit receipt for a named asset. No row is removed for this condition. Source market indices are restricted to the documented two-vault configuration (0 or 1).
