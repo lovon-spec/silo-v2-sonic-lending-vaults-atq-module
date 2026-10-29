@@ -71,7 +71,7 @@ function toTag(market: Market): ContractTag {
     "UI/Website Link": "https://app.silo.finance/",
     "Public Note": `Silo Finance V2 vault contract, silo #${market.silo.siloId}, ` +
       `configuration ${market.silo.configAddress}. ` +
-      (zeroAsset ? "Zero-asset configuration; no underlying asset is identified. " :
+      (zeroAsset ? "ERC-20 share token with a zero-asset configuration; no underlying asset is identified. " :
         `Underlying asset: ${market.inputToken.id}. The vault is also its ERC-20 deposit-share token. `) +
       `Paired lending vault: ${market.otherMarket.id}. Source market index: ${market.index}.`,
   };
