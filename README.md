@@ -47,3 +47,5 @@ two-argument `returnTags` function. The module was authored from scratch and is
 MIT licensed.
 
 All source market instances are retained, including zero-asset configurations. A zero-asset instance receives its source Silo ID and market index as its name, and its note identifies it as an ERC-20 share token and says that no underlying asset is identified. It is not presented as a usable deposit receipt for a named asset. No row is removed for this condition. Source market indices are restricted to the documented two-vault configuration (0 or 1).
+
+Each query, including pacing and the response-body read, has a 30-second deadline. The complete run has a ten-minute deadline. A deadline throws without returning a partial set; native fetch cancellation is requested, and the local race also bounds fetch implementations that ignore cancellation. Use yarn build and yarn test.
